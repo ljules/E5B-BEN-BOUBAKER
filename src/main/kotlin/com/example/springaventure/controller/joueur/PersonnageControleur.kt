@@ -1,5 +1,6 @@
 package com.example.springaventure.controller.joueur
 
+import com.example.springaventure.model.dao.ArmureDao
 import com.example.springaventure.model.dao.PersonnageDao
 import com.example.springaventure.model.dao.UtilisateurDao
 import com.example.springaventure.model.entity.Personnage
@@ -18,7 +19,10 @@ class PersonnageControleur(
     /** DAO pour l'accès aux données des personnages. */
     val personnageDao: PersonnageDao,
     /** DAO pour l'accès aux données des utilisateurs. */
-    val utilisateurDao: UtilisateurDao
+    val utilisateurDao: UtilisateurDao,
+    /** DAO pour l'accès aux données des armures. */
+    val armureDao: ArmureDao,
+
 ) {
 
     /**
@@ -65,7 +69,11 @@ class PersonnageControleur(
     @GetMapping("/joueur/personnage/create")
     fun create(model: Model): String {
         val nouvellePersonnage = Personnage(null, "", 1, 1, 1, 1)
+        val valeurArmures = armureDao.findAll()
         model.addAttribute("nouvellePersonnage", nouvellePersonnage)
+
+        model.addAttribute("armures", valeurArmures)
+
         return "joueur/personnage/create"
     }
 
@@ -103,7 +111,10 @@ class PersonnageControleur(
     @GetMapping("/joueur/personnage/{id}/edit")
     fun edit(@PathVariable id: Long, model: Model): String {
         val personnage = this.personnageDao.findById(id).orElseThrow()
+        val valeurArmure = armureDao.findAll()
         model.addAttribute("personnage", personnage)
+        model.addAttribute("armure", valeurArmure)
+
         return "joueur/personnage/edit"
     }
 
@@ -133,6 +144,7 @@ class PersonnageControleur(
         personnageModifier.endurance = personnage.endurance
         personnageModifier.vitesse = personnage.vitesse
         personnageModifier.utilisateur = utilisateur
+        personnageModifier.armureEquipee = personnage.armureEquipee
         val savedPersonnage = this.personnageDao.save(personnageModifier)
         redirectAttributes.addFlashAttribute("msgSuccess", "Modification de ${savedPersonnage.nom} réussie")
         return "redirect:/joueur/personnage"

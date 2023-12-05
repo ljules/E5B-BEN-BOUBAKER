@@ -34,6 +34,7 @@ class ArmureControleur(
     fun index(model: Model): String {
         val armures = this.armureDao.findAll()
         model.addAttribute("armures", armures)
+        model.addAttribute("nombreTotalArmures", armures.size)
         return "admin/armure/index"
     }
 
